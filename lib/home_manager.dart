@@ -12,8 +12,8 @@ class HomeManager extends StatefulWidget {
   State<HomeManager> createState() => _HomeManagerState();
 }
 
-class _HomeManagerState extends State<HomeManager> with TickerProviderStateMixin {
-
+class _HomeManagerState extends State<HomeManager>
+    with TickerProviderStateMixin {
   late AnimationController _fabAnimationController;
   late AnimationController _borderRadiusAnimationController;
   late Animation<double> fabAnimation;
@@ -31,25 +31,6 @@ class _HomeManagerState extends State<HomeManager> with TickerProviderStateMixin
 
   int activeIndex = 0;
 
-  bool onScrollNotification(ScrollNotification notification) {
-    if (notification is UserScrollNotification &&
-        notification.metrics.axis == Axis.vertical) {
-      switch (notification.direction) {
-        case ScrollDirection.forward:
-          _hideBottomBarAnimationController.reverse();
-          _fabAnimationController.forward(from: 0);
-          break;
-        case ScrollDirection.reverse:
-          _hideBottomBarAnimationController.forward();
-          _fabAnimationController.reverse(from: 1);
-          break;
-        case ScrollDirection.idle:
-          break;
-      }
-    }
-    return false;
-  }
-
   @override
   void initState() {
     super.initState();
@@ -59,54 +40,21 @@ class _HomeManagerState extends State<HomeManager> with TickerProviderStateMixin
     );
     SystemChrome.setSystemUIOverlayStyle(systemTheme);
 
-    _fabAnimationController = AnimationController(
-      duration: Duration(milliseconds: 500),
-      vsync: this,
-    );
-    _borderRadiusAnimationController = AnimationController(
-      duration: Duration(milliseconds: 500),
-      vsync: this,
-    );
-    fabCurve = CurvedAnimation(
-      parent: _fabAnimationController,
-      curve: Interval(0.5, 1.0, curve: Curves.fastOutSlowIn),
-    );
-    borderRadiusCurve = CurvedAnimation(
-      parent: _borderRadiusAnimationController,
-      curve: Interval(0.5, 1.0, curve: Curves.fastOutSlowIn),
-    );
-
-    fabAnimation = Tween<double>(begin: 0, end: 1).animate(fabCurve);
-    borderRadiusAnimation = Tween<double>(begin: 0, end: 1).animate(
-      borderRadiusCurve,
-    );
-
-    _hideBottomBarAnimationController = AnimationController(
-      duration: Duration(milliseconds: 200),
-      vsync: this,
-    );
-
-    Future.delayed(
-      Duration(seconds: 1),
-          () => _fabAnimationController.forward(),
-    );
-    Future.delayed(
-      Duration(seconds: 1),
-          () => _borderRadiusAnimationController.forward(),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: null,
-      body: NotificationListener<ScrollNotification>(
-        onNotification: onScrollNotification,
-        child: NavigationScreen(iconList[activeIndex]),
+      body: SafeArea(
+        child: Text(
+          'Content Here'
+        ),
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: HexColor('#373A36'),
+        splashColor: Colors.transparent,
         onPressed: () {},
-        //params
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: AnimatedBottomNavigationBar.builder(
@@ -135,17 +83,17 @@ class _HomeManagerState extends State<HomeManager> with TickerProviderStateMixin
             ],
           );
         },
+
         backgroundColor: HexColor('#373A36'),
         activeIndex: activeIndex,
-        splashColor: HexColor('#FFA400'),
-        notchAndCornersAnimation: borderRadiusAnimation,
-        splashSpeedInMilliseconds: 300,
-        notchSmoothness: NotchSmoothness.defaultEdge,
         gapLocation: GapLocation.center,
-        leftCornerRadius: 32,
-        rightCornerRadius: 32,
+        splashColor: Colors.transparent,
+        splashSpeedInMilliseconds: 150,
+        splashRadius: 0,
+        notchSmoothness: NotchSmoothness.softEdge,
+        leftCornerRadius: 10,
+        rightCornerRadius: 10,
         onTap: (index) => setState(() => activeIndex = index),
-        hideAnimationController: _hideBottomBarAnimationController,
         shadow: const BoxShadow(
           offset: Offset(0, 1),
           blurRadius: 12,
@@ -155,89 +103,7 @@ class _HomeManagerState extends State<HomeManager> with TickerProviderStateMixin
       ),
     );
   }
-
 }
-
-
-class NavigationScreen extends StatefulWidget {
-  final IconData iconData;
-
-  NavigationScreen(this.iconData) : super();
-
-  @override
-  _NavigationScreenState createState() => _NavigationScreenState();
-}
-
-class _NavigationScreenState extends State<NavigationScreen>
-    with TickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> animation;
-
-  @override
-  void didUpdateWidget(NavigationScreen oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.iconData != widget.iconData) {
-      _startAnimation();
-    }
-  }
-
-  @override
-  void initState() {
-    _controller = AnimationController(
-      vsync: this,
-      duration: Duration(milliseconds: 1000),
-    );
-    animation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeIn,
-    );
-    _controller.forward();
-    super.initState();
-  }
-
-  _startAnimation() {
-    _controller = AnimationController(
-      vsync: this,
-      duration: Duration(milliseconds: 1000),
-    );
-    animation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeIn,
-    );
-    _controller.forward();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      child: ListView(
-        children: [
-          SizedBox(height: 64),
-          Center(
-            child: CircularRevealAnimation(
-              animation: animation,
-              centerOffset: Offset(80, 80),
-              maxRadius: MediaQuery.of(context).size.longestSide * 1.1,
-              child: Icon(
-                widget.iconData,
-                color: HexColor('#FFA400'),
-                size: 160,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class HexColor extends Color {
   HexColor(final String hexColor) : super(_getColorFromHex(hexColor));
 
