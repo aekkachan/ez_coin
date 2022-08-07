@@ -53,6 +53,8 @@ class _HomeManagerState extends State<HomeManager>
       systemNavigationBarIconBrightness: Brightness.light,
     );
     SystemChrome.setSystemUIOverlayStyle(systemTheme);
+
+    Get.put(EZCoinCoinController());
   }
 
   @override

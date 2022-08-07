@@ -1,3 +1,4 @@
+
 import 'package:ez_coin/localization/languages.dart';
 import 'package:ez_coin/splash_screen.dart';
 import 'package:flutter/material.dart';

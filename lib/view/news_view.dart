@@ -1,5 +1,5 @@
-
 import 'package:ez_coin/controller/ez_coin_controller.dart';
+import 'package:ez_coin/view/news_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
@@ -13,12 +13,12 @@ class NewsView extends StatefulWidget {
 }
 
 class _NewsViewState extends State<NewsView> {
-  var ezCoinController = Get.put(EZCoinCoinController());
+  EZCoinCoinController coinController = Get.find();
 
   @override
   Widget build(BuildContext context) {
-    ezCoinController.getPopularNews('data');
-    ezCoinController.getLastedNews('data');
+    coinController.getPopularNews('data');
+    coinController.getLastedNews('data');
 
     return Scaffold(
       body: SafeArea(
@@ -51,47 +51,59 @@ class _NewsViewState extends State<NewsView> {
         child: SizedBox(
             height: 130.0,
             child: Obx(() {
-              if (ezCoinController.dataPopularAvailable) {
-                var article = ezCoinController.trxPopularNews.articles;
+              if (coinController.dataPopularAvailable) {
+                var article = coinController.trxPopularNews.articles;
 
                 return ListView.builder(
                     scrollDirection: Axis.horizontal,
                     itemCount: article!.length,
                     itemBuilder: (context, index) {
-                      return Card(
-                        elevation: 4,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                        ),
-                        child: ClipPath(
-                          clipper: ShapeBorderClipper(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15))),
-                          child: Container(
-                            decoration: BoxDecoration(
-                                image: DecorationImage(
-                                    opacity: 0.6,
-                                    fit: BoxFit.fitWidth,
-                                    image: NetworkImage(
-                                        '${article[index].urlToImage}'))),
-                            width: 220,
-                            padding: const EdgeInsets.only(
-                                left: 10, right: 10, top: 10, bottom: 10),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  '${article[index].title}',
-                                  textAlign: TextAlign.start,
-                                  maxLines: 3,
-                                  overflow: TextOverflow.fade,
-                                  softWrap: true,
-                                  style: const TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 20),
-                                ),
-                              ],
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                                return NewsDetail(
+                                  imgUrl: article[index].urlToImage,
+                                  topic: article[index].title,
+                                  content: article[index].content,
+                                );
+                              }));
+                        },
+                        child: Card(
+                          elevation: 4,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          child: ClipPath(
+                            clipper: ShapeBorderClipper(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15))),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      fit: BoxFit.fill,
+                                      image: NetworkImage(
+                                          '${article[index].urlToImage}'))),
+                              width: 220,
+                              padding: const EdgeInsets.only(
+                                  left: 10, right: 10, top: 10, bottom: 10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    '${article[index].title}',
+                                    textAlign: TextAlign.start,
+                                    maxLines: 3,
+                                    overflow: TextOverflow.fade,
+                                    softWrap: true,
+                                    style: const TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 20),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -106,7 +118,7 @@ class _NewsViewState extends State<NewsView> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15.0),
                       ),
-                      child: SizedBox(
+                      child: const SizedBox(
                         height: 130,
                         width: 240,
                       ),
@@ -127,59 +139,74 @@ class _NewsViewState extends State<NewsView> {
               color: Colors.black, fontWeight: FontWeight.w700, fontSize: 30),
         ),
         Obx(() {
-          if (ezCoinController.dataLastedNewsAvailable) {
-
-            var article = ezCoinController.trxLastedNews.articles!;
+          if (coinController.dataLastedNewsAvailable) {
+            var article = coinController.trxLastedNews.articles!;
 
             return ListView.separated(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: 10,
               itemBuilder: (context, index) {
-                return Container(
-                  padding: const EdgeInsets.only(left: 15, right: 10, top: 8, bottom: 8),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        flex: 9,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${article[index].title}',
-                              textAlign: TextAlign.start,
-                              maxLines: 2,
-                              overflow: TextOverflow.fade,
-                              softWrap: true,
-                              style: const TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 16),
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text('${article[index].content}',
-                                maxLines: 4,
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return NewsDetail(
+                        imgUrl: article[index].urlToImage,
+                        topic: article[index].title,
+                        content: article[index].content,
+                      );
+                    }));
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.only(
+                        left: 15, right: 10, top: 8, bottom: 8),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          flex: 9,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${article[index].title}',
                                 textAlign: TextAlign.start,
+                                maxLines: 2,
+                                overflow: TextOverflow.fade,
+                                softWrap: true,
                                 style: const TextStyle(
-                                  color: Colors.black45,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 14,
-                                )),
-                          ],
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 16),
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Text('${article[index].content}',
+                                  maxLines: 4,
+                                  textAlign: TextAlign.start,
+                                  style: const TextStyle(
+                                    color: Colors.black45,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 14,
+                                  )),
+                            ],
+                          ),
                         ),
-                      ),
-                      Expanded(
-                        flex: 3,
-                        child: FadeInImage.memoryNetwork(
-                          placeholder: kTransparentImage,
-                          image: '${article[index].urlToImage}',
+                        Expanded(
+                          flex: 3,
+                          child: Hero(
+                            tag: 'imgLastedNews',
+                            child: FadeInImage.memoryNetwork(
+                              placeholder: kTransparentImage,
+                              image: '${article[index].urlToImage}',
+                            ),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 );
               },
@@ -202,9 +229,9 @@ class _NewsViewState extends State<NewsView> {
                     child: Container(
                       width: double.infinity,
                       height: 120,
-                      padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
-                    )
-                ));
+                      padding:
+                          const EdgeInsets.only(left: 20, right: 20, top: 10),
+                    )));
           }
         }),
       ],
