@@ -1,9 +1,16 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:circular_reveal_animation/circular_reveal_animation.dart';
+import 'package:ez_coin/controller/ez_coin_controller.dart';
+import 'package:ez_coin/view/currency_list_view.dart';
+import 'package:ez_coin/view/exchange_rate_view.dart';
+import 'package:ez_coin/view/history_view.dart';
+import 'package:ez_coin/view/news_view.dart';
+import 'package:ez_coin/view/setting_view.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
+import 'package:hexcolor/hexcolor.dart';
 
 class HomeManager extends StatefulWidget {
   const HomeManager({Key? key}) : super(key: key);
@@ -14,22 +21,29 @@ class HomeManager extends StatefulWidget {
 
 class _HomeManagerState extends State<HomeManager>
     with TickerProviderStateMixin {
-  late AnimationController _fabAnimationController;
-  late AnimationController _borderRadiusAnimationController;
   late Animation<double> fabAnimation;
   late Animation<double> borderRadiusAnimation;
   late CurvedAnimation fabCurve;
   late CurvedAnimation borderRadiusCurve;
-  late AnimationController _hideBottomBarAnimationController;
 
-  final iconList = <IconData>[
-    Icons.brightness_5,
-    Icons.brightness_4,
-    Icons.brightness_6,
-    Icons.brightness_7,
+  final _iconList = <IconData>[
+    CupertinoIcons.home,
+    Icons.auto_graph,
+    Icons.currency_exchange,
+    Icons.settings,
   ];
 
-  int activeIndex = 0;
+  final _menus = ['Home', 'Rankin', 'Exchange', 'Setting'];
+
+  final _pages = const [
+    NewsView(),
+    CurrencyListView(),
+    ExchangeRateView(),
+    SettingView(),
+    HistoryView(),
+  ];
+
+  int _activeIndex = 0;
 
   @override
   void initState() {
@@ -39,26 +53,31 @@ class _HomeManagerState extends State<HomeManager>
       systemNavigationBarIconBrightness: Brightness.light,
     );
     SystemChrome.setSystemUIOverlayStyle(systemTheme);
-
   }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: null,
       body: SafeArea(
-        child: Text(
-          'Content Here'
+        child: IndexedStack(
+          index: _activeIndex,
+          children: _pages,
         ),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: HexColor('#373A36'),
         splashColor: Colors.transparent,
-        onPressed: () {},
+        child: Icon(
+          CupertinoIcons.graph_square,
+          color: _activeIndex == 4 ? HexColor('#FFA400') : Colors.white,
+        ),
+        onPressed: () => setState(() => _activeIndex = 4),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: AnimatedBottomNavigationBar.builder(
-        itemCount: iconList.length,
+        itemCount: _iconList.length,
         tabBuilder: (int index, bool isActive) {
           final color = isActive ? HexColor('#FFA400') : Colors.white;
           return Column(
@@ -66,7 +85,7 @@ class _HomeManagerState extends State<HomeManager>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                iconList[index],
+                _iconList[index],
                 size: 24,
                 color: color,
               ),
@@ -74,7 +93,7 @@ class _HomeManagerState extends State<HomeManager>
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: AutoSizeText(
-                  "brightness $index",
+                  _menus[index],
                   maxLines: 1,
                   style: TextStyle(color: color),
                   group: AutoSizeGroup(),
@@ -83,9 +102,8 @@ class _HomeManagerState extends State<HomeManager>
             ],
           );
         },
-
         backgroundColor: HexColor('#373A36'),
-        activeIndex: activeIndex,
+        activeIndex: _activeIndex,
         gapLocation: GapLocation.center,
         splashColor: Colors.transparent,
         splashSpeedInMilliseconds: 150,
@@ -93,7 +111,7 @@ class _HomeManagerState extends State<HomeManager>
         notchSmoothness: NotchSmoothness.softEdge,
         leftCornerRadius: 10,
         rightCornerRadius: 10,
-        onTap: (index) => setState(() => activeIndex = index),
+        onTap: (index) => setState(() => _activeIndex = index),
         shadow: const BoxShadow(
           offset: Offset(0, 1),
           blurRadius: 12,
@@ -102,16 +120,5 @@ class _HomeManagerState extends State<HomeManager>
         ),
       ),
     );
-  }
-}
-class HexColor extends Color {
-  HexColor(final String hexColor) : super(_getColorFromHex(hexColor));
-
-  static int _getColorFromHex(String hexColor) {
-    hexColor = hexColor.toUpperCase().replaceAll('#', '');
-    if (hexColor.length == 6) {
-      hexColor = 'FF' + hexColor;
-    }
-    return int.parse(hexColor, radix: 16);
   }
 }
