@@ -14,7 +14,7 @@ class _ExchangeRateViewState extends State<ExchangeRateView> {
     return Container(
       padding: const EdgeInsets.all(15),
       alignment: Alignment.center,
-      child: Lottie.asset('assets/under_construction2.json'),
+      child: Lottie.asset('assets/under_construction1.json'),
     );
   }
 }
