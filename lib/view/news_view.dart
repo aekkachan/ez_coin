@@ -17,6 +17,7 @@ class _NewsViewState extends State<NewsView> {
 
   @override
   Widget build(BuildContext context) {
+
     coinController.getPopularNews('data');
     coinController.getLastedNews('data');
 
@@ -62,12 +63,12 @@ class _NewsViewState extends State<NewsView> {
                         onTap: () {
                           Navigator.push(context,
                               MaterialPageRoute(builder: (context) {
-                                return NewsDetail(
-                                  imgUrl: article[index].urlToImage,
-                                  topic: article[index].title,
-                                  content: article[index].content,
-                                );
-                              }));
+                            return NewsDetail(
+                              imgUrl: article[index].urlToImage,
+                              topic: article[index].title,
+                              content: article[index].content,
+                            );
+                          }));
                         },
                         child: Card(
                           elevation: 4,
@@ -147,6 +148,8 @@ class _NewsViewState extends State<NewsView> {
               physics: const NeverScrollableScrollPhysics(),
               itemCount: 10,
               itemBuilder: (context, index) {
+
+                var imgTag = 'imgLastedNews_$index';
                 return GestureDetector(
                   onTap: () {
                     Navigator.push(context,
@@ -155,6 +158,7 @@ class _NewsViewState extends State<NewsView> {
                         imgUrl: article[index].urlToImage,
                         topic: article[index].title,
                         content: article[index].content,
+                        imgTag: imgTag,
                       );
                     }));
                   },
@@ -198,10 +202,10 @@ class _NewsViewState extends State<NewsView> {
                         Expanded(
                           flex: 3,
                           child: Hero(
-                            tag: 'imgLastedNews',
+                            tag: imgTag,
                             child: FadeInImage.memoryNetwork(
                               placeholder: kTransparentImage,
-                              image: '${article[index].urlToImage}',
+                              image: article[index].urlToImage!,
                             ),
                           ),
                         ),

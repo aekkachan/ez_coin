@@ -14,6 +14,8 @@ class _HistoryViewState extends State<HistoryView> {
   EZCoinCoinController coinController = Get.find();
 
   final List<SalesData> chartData = [];
+  final List<bool> selectedInterval = <bool>[true, false].obs;
+  final List<bool> selectedChart = <bool>[true, false].obs;
 
   late TooltipBehavior _tooltipBehavior;
   late CrosshairBehavior _crosshairBehavior;
@@ -29,6 +31,21 @@ class _HistoryViewState extends State<HistoryView> {
   Widget build(BuildContext context) {
     coinController.getPrice('params');
 
+    return Scaffold(
+      appBar: null,
+      body: SafeArea(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            chart(),
+            togglebutton(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  chart() {
     return Container(
       padding: const EdgeInsets.all(10),
       alignment: Alignment.center,
@@ -36,17 +53,19 @@ class _HistoryViewState extends State<HistoryView> {
         if (coinController.dataPriceAvailable) {
           var price = coinController.trxPrice;
           List coinPrice = price.prices!;
-          int i = 0;
-          for (var element in coinPrice) {
-            chartData.add(
-                SalesData(DateTime.now().add(Duration(days: i)), element[1]));
-            i--;
+          int interval = 0;
+
+          for (var index = coinPrice.length - 1; index >= 0; index--) {
+            chartData.add(SalesData(
+                DateTime.now().add(Duration(hours: interval)),
+                coinPrice[index][1]));
+            interval--;
           }
         }
         return SfCartesianChart(
             crosshairBehavior: _crosshairBehavior,
             tooltipBehavior: _tooltipBehavior,
-            legend: Legend(isVisible: true),
+            legend: Legend(isVisible: false),
             enableAxisAnimation: true,
             title: ChartTitle(
               text: 'Bitcoin Historic Chart',
@@ -65,6 +84,95 @@ class _HistoryViewState extends State<HistoryView> {
             ]);
       }),
     );
+  }
+
+  togglebutton() {
+    return IntrinsicHeight(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Obx(() {
+            return ToggleButtons(
+              direction: Axis.horizontal,
+              onPressed: (int index) {
+                // The button that is tapped is set to true, and the others to false.
+                for (int i = 0; i < selectedInterval.length; i++) {
+                  selectedInterval[i] = i == index;
+                }
+              },
+              borderRadius: const BorderRadius.all(Radius.circular(8)),
+              selectedBorderColor: Colors.blue[700],
+              selectedColor: Colors.white,
+              fillColor: Colors.blue[200],
+              color: Colors.blue[400],
+              isSelected: selectedInterval,
+              children: const [
+                Padding(
+                  padding: EdgeInsets.only(left: 5, right: 5),
+                  child: Text(
+                    'Daily',
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: 5, right: 5),
+                  child: Text(
+                    'Hourly',
+                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
+                  ),
+                ),
+              ],
+            );
+          }),
+          const Padding(
+            padding: EdgeInsets.only(left: 10, right: 10),
+            child: VerticalDivider(
+              color: Colors.black,
+              thickness: 0.5,
+            ),
+          ),
+          Obx(() {
+            return ToggleButtons(
+              direction: Axis.horizontal,
+              onPressed: (int index) {
+                // The button that is tapped is set to true, and the others to false.
+                for (int i = 0; i < selectedChart.length; i++) {
+                  selectedChart[i] = i == index;
+                }
+              },
+              borderRadius: const BorderRadius.all(Radius.circular(8)),
+              selectedBorderColor: Colors.blue[700],
+              selectedColor: Colors.white,
+              fillColor: Colors.blue[200],
+              color: Colors.blue[400],
+              isSelected: selectedChart,
+              children: const [
+                Padding(
+                    padding: EdgeInsets.only(left: 5, right: 5),
+                    child: Icon(Icons.show_chart_rounded)),
+                Padding(
+                    padding: EdgeInsets.only(left: 5, right: 5),
+                    child: Icon(Icons.candlestick_chart_rounded)),
+              ],
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+  callSnakBar() {
+    const snackBar = SnackBar(
+      content: Text('Yay! A SnackBar!'),
+    );
+
+// Find the ScaffoldMessenger in the widget tree
+// and use it to show a SnackBar.
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }
 
