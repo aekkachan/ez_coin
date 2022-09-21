@@ -2,7 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class NewsDetail extends StatelessWidget {
-  const NewsDetail({Key? key, this.imgUrl, this.topic, this.content, this.imgTag}) : super(key: key);
+  const NewsDetail(
+      {Key? key,
+      this.imgUrl = "",
+      this.topic = "",
+      this.content = "",
+      this.imgTag = ""})
+      : super(key: key);
 
   final dynamic imgUrl;
   final dynamic topic;
@@ -72,7 +78,7 @@ class NewsDetail extends StatelessWidget {
               ),
               SingleChildScrollView(
                 scrollDirection: Axis.vertical,
-                padding:const EdgeInsets.only(left: 10, right: 10),
+                padding: const EdgeInsets.only(left: 10, right: 10),
                 child: Text(
                   content,
                   textAlign: TextAlign.start,

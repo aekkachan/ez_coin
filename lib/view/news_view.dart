@@ -17,9 +17,8 @@ class _NewsViewState extends State<NewsView> {
 
   @override
   Widget build(BuildContext context) {
-
-    coinController.getPopularNews('data');
-    coinController.getLastedNews('data');
+    // coinController.getPopularNews('data');
+    // coinController.getLastedNews('data');
 
     return Scaffold(
       body: SafeArea(
@@ -148,7 +147,6 @@ class _NewsViewState extends State<NewsView> {
               physics: const NeverScrollableScrollPhysics(),
               itemCount: 10,
               itemBuilder: (context, index) {
-
                 var imgTag = 'imgLastedNews_$index';
                 return GestureDetector(
                   onTap: () {

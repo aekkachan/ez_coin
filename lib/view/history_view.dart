@@ -1,7 +1,10 @@
 import 'package:ez_coin/controller/ez_coin_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class HistoryView extends StatefulWidget {
   const HistoryView({Key? key}) : super(key: key);
@@ -20,10 +23,16 @@ class _HistoryViewState extends State<HistoryView> {
   late TooltipBehavior _tooltipBehavior;
   late CrosshairBehavior _crosshairBehavior;
 
+  String lastPrice = "0.00";
+
+  var themeColor = HexColor('#8baa50');
+  var bgColor = HexColor('#32343b');
+
   @override
   void initState() {
-    _tooltipBehavior = TooltipBehavior(enable: true);
-    _crosshairBehavior = CrosshairBehavior(enable: true);
+    _tooltipBehavior = TooltipBehavior(
+        enable: true, header: 'BTC', borderColor: themeColor, borderWidth: 1);
+    _crosshairBehavior = CrosshairBehavior(enable: false);
     super.initState();
   }
 
@@ -32,16 +41,53 @@ class _HistoryViewState extends State<HistoryView> {
     coinController.getPrice('params');
 
     return Scaffold(
-      appBar: null,
-      body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            chart(),
-            togglebutton(),
-          ],
+      appBar: AppBar(
+        backgroundColor: bgColor,
+        elevation: 0,
+        centerTitle: true,
+        title: const Text(
+          'Bitcoin (BTC)',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w400,
+          ),
         ),
       ),
+      body: SafeArea(
+          child: Container(
+        color: bgColor,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.fromLTRB(30, 20, 0, 20),
+              alignment: Alignment.centerLeft,
+              child: RichText(
+                text: TextSpan(
+                  text: '1 BTC / USD\n',
+                  style: TextStyle(
+                    color: themeColor,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  children: <TextSpan>[
+                    TextSpan(
+                        text: '\$ 10.0',
+                        style: TextStyle(
+                          color: themeColor,
+                          fontSize: 30.0,
+                        )),
+                  ],
+                ),
+              ),
+            ),
+            togglebutton(),
+            chart(),
+          ],
+        ),
+      )),
     );
   }
 
@@ -67,18 +113,15 @@ class _HistoryViewState extends State<HistoryView> {
             tooltipBehavior: _tooltipBehavior,
             legend: Legend(isVisible: false),
             enableAxisAnimation: true,
-            title: ChartTitle(
-              text: 'Bitcoin Historic Chart',
-              textStyle: const TextStyle(
-                color: Colors.black,
-              ),
-            ),
             primaryXAxis: DateTimeAxis(),
             series: <ChartSeries>[
               // Renders line chart
               LineSeries<SalesData, DateTime>(
                   dataSource: chartData,
                   enableTooltip: true,
+                  animationDuration: 10,
+                  trendlines: null,
+                  color: themeColor,
                   xValueMapper: (SalesData sales, _) => sales.year,
                   yValueMapper: (SalesData sales, _) => sales.sales)
             ]);
@@ -89,7 +132,8 @@ class _HistoryViewState extends State<HistoryView> {
   togglebutton() {
     return IntrinsicHeight(
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Obx(() {
@@ -101,40 +145,42 @@ class _HistoryViewState extends State<HistoryView> {
                   selectedInterval[i] = i == index;
                 }
               },
+              constraints: BoxConstraints(
+                  minWidth: 0,
+                  maxWidth: MediaQuery.of(context).size.width / 2,
+                  minHeight: 30,
+                  maxHeight: 30),
               borderRadius: const BorderRadius.all(Radius.circular(8)),
-              selectedBorderColor: Colors.blue[700],
-              selectedColor: Colors.white,
-              fillColor: Colors.blue[200],
-              color: Colors.blue[400],
+              selectedBorderColor: themeColor,
+              selectedColor: bgColor,
+              borderColor: HexColor('#97b858'),
+              fillColor: themeColor,
+              color: themeColor,
               isSelected: selectedInterval,
               children: const [
                 Padding(
-                  padding: EdgeInsets.only(left: 5, right: 5),
+                  padding: EdgeInsets.only(
+                    left: 15,
+                    right: 15,
+                  ),
                   child: Text(
                     'Daily',
                     style: TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.w500,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
                     ),
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(left: 5, right: 5),
+                  padding: EdgeInsets.only(left: 15, right: 15),
                   child: Text(
                     'Hourly',
-                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
                   ),
                 ),
               ],
             );
           }),
-          const Padding(
-            padding: EdgeInsets.only(left: 10, right: 10),
-            child: VerticalDivider(
-              color: Colors.black,
-              thickness: 0.5,
-            ),
-          ),
           Obx(() {
             return ToggleButtons(
               direction: Axis.horizontal,
@@ -143,19 +189,26 @@ class _HistoryViewState extends State<HistoryView> {
                 for (int i = 0; i < selectedChart.length; i++) {
                   selectedChart[i] = i == index;
                 }
+                callSnakBar();
               },
+              constraints: BoxConstraints(
+                  minWidth: 0,
+                  maxWidth: MediaQuery.of(context).size.width / 2,
+                  minHeight: 30,
+                  maxHeight: 30),
               borderRadius: const BorderRadius.all(Radius.circular(8)),
-              selectedBorderColor: Colors.blue[700],
-              selectedColor: Colors.white,
-              fillColor: Colors.blue[200],
-              color: Colors.blue[400],
+              selectedBorderColor: themeColor,
+              selectedColor: bgColor,
+              borderColor: HexColor('#97b858'),
+              fillColor: themeColor,
+              color: themeColor,
               isSelected: selectedChart,
               children: const [
                 Padding(
-                    padding: EdgeInsets.only(left: 5, right: 5),
+                    padding: EdgeInsets.only(left: 15, right: 15),
                     child: Icon(Icons.show_chart_rounded)),
                 Padding(
-                    padding: EdgeInsets.only(left: 5, right: 5),
+                    padding: EdgeInsets.only(left: 15, right: 15),
                     child: Icon(Icons.candlestick_chart_rounded)),
               ],
             );
@@ -166,13 +219,22 @@ class _HistoryViewState extends State<HistoryView> {
   }
 
   callSnakBar() {
-    const snackBar = SnackBar(
-      content: Text('Yay! A SnackBar!'),
+    showTopSnackBar(
+      context,
+      CustomSnackBar.info(
+        textStyle: TextStyle(
+            color: themeColor, fontWeight: FontWeight.w500, fontSize: 16),
+        message: "Under construction",
+        backgroundColor: bgColor,
+        icon: Icon(Icons.construction, color: themeColor, size: 40),
+        iconPositionLeft: 30,
+        boxShadow: [
+          BoxShadow(color: themeColor, spreadRadius: 1, blurRadius: 2)
+        ],
+      ),
+      animationDuration: const Duration(milliseconds: 800),
+      displayDuration: const Duration(milliseconds: 800),
     );
-
-// Find the ScaffoldMessenger in the widget tree
-// and use it to show a SnackBar.
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }
 

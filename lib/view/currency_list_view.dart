@@ -1,8 +1,10 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:ez_coin/constant/app_color.dart';
 import 'package:ez_coin/controller/ez_coin_controller.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class CurrencyListView extends StatefulWidget {
@@ -28,33 +30,39 @@ class _CurrencyListViewState extends State<CurrencyListView> {
 
     return SafeArea(
       child: Container(
+        color: AppColor().bgColor,
         padding: const EdgeInsets.only(left: 5, right: 5, top: 10),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            GestureDetector(
-              onTap: () {
-                _displaySelectorBottomSheet();
-              },
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: const [
-                  Text(
-                    'Market Cap',
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 30,
-                        fontWeight: FontWeight.w700),
-                  ),
-                  Icon(
-                    Icons.arrow_drop_down,
-                    size: 30,
-                  ),
-                ],
+            Padding(
+              padding: const EdgeInsets.only(left: 15, top: 15),
+              child: GestureDetector(
+                onTap: () {
+                  _displaySelectorBottomSheet();
+                },
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Market Cap',
+                      style: TextStyle(
+                          color: AppColor().themeColor,
+                          fontSize: 30,
+                          fontWeight: FontWeight.w500),
+                    ),
+                    Icon(
+                      Icons.arrow_drop_down,
+                      size: 30,
+                      color: AppColor().themeColor,
+                    ),
+                  ],
+                ),
               ),
             ),
+
             const SizedBox(
               height: 10,
             ),
@@ -67,6 +75,8 @@ class _CurrencyListViewState extends State<CurrencyListView> {
                   scrollDirection: Axis.vertical,
                   itemBuilder: (context, index) {
                     return Card(
+                      margin: const EdgeInsets.only(
+                          left: 10, right: 10, bottom: 20),
                       elevation: 4,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15.0),
@@ -76,8 +86,9 @@ class _CurrencyListViewState extends State<CurrencyListView> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(15))),
                         child: Container(
+                          color: HexColor('#DFDFDE'),
                           padding: const EdgeInsets.only(
-                              top: 15, bottom: 15, left: 10, right: 10),
+                              top: 15, bottom: 15, left: 15, right: 15),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -124,8 +135,8 @@ class _CurrencyListViewState extends State<CurrencyListView> {
                               FadeInImage.memoryNetwork(
                                 placeholder: kTransparentImage,
                                 image: '${value.trxCoin[index].image}',
-                                width: 50,
-                                height: 50,
+                                width: 40,
+                                height: 40,
                                 fit: BoxFit.fitWidth,
                               ),
                             ],

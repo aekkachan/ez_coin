@@ -49,6 +49,7 @@ dependencies:
   syncfusion_flutter_charts: ^20.2.40
   syncfusion_flutter_core: ^20.2.40
   intl: ^0.17.0
+  top_snackbar_flutter: ^2.1.1
 
 dev_dependencies:
   flutter_test:
