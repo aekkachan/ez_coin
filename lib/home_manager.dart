@@ -38,8 +38,8 @@ class _HomeManagerState extends State<HomeManager>
 
   int _activeIndex = 0;
 
-  var _bgColor = AppColor().bgColor;
-  var _themeColor = AppColor().themeColor;
+  final _bgColor = AppColor.bgColor;
+  final _themeColor = AppColor.themeColor;
 
   @override
   void initState() {

@@ -1,3 +1,4 @@
+import 'package:ez_coin/constant/app_color.dart';
 import 'package:ez_coin/controller/ez_coin_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -23,15 +24,19 @@ class _HistoryViewState extends State<HistoryView> {
   late TooltipBehavior _tooltipBehavior;
   late CrosshairBehavior _crosshairBehavior;
 
-  String lastPrice = "0.00";
-
-  var themeColor = HexColor('#8baa50');
-  var bgColor = HexColor('#32343b');
+  final _textStyle = const TextStyle(
+      color: Colors.white,
+      fontSize: 14,
+      fontWeight: FontWeight.w400,
+      height: 5);
 
   @override
   void initState() {
     _tooltipBehavior = TooltipBehavior(
-        enable: true, header: 'BTC', borderColor: themeColor, borderWidth: 1);
+        enable: true,
+        header: 'BTC',
+        borderColor: AppColor.themeColor,
+        borderWidth: 1);
     _crosshairBehavior = CrosshairBehavior(enable: false);
     super.initState();
   }
@@ -39,10 +44,11 @@ class _HistoryViewState extends State<HistoryView> {
   @override
   Widget build(BuildContext context) {
     coinController.getPrice('params');
+    coinController.getCoinDetail('param');
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: bgColor,
+        backgroundColor: AppColor.bgColor,
         elevation: 0,
         centerTitle: true,
         title: const Text(
@@ -56,7 +62,7 @@ class _HistoryViewState extends State<HistoryView> {
       ),
       body: SafeArea(
           child: Container(
-        color: bgColor,
+        color: AppColor.bgColor,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -68,15 +74,15 @@ class _HistoryViewState extends State<HistoryView> {
                 text: TextSpan(
                   text: '1 BTC / USD\n',
                   style: TextStyle(
-                    color: themeColor,
+                    color: AppColor.themeColor,
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
                   children: <TextSpan>[
                     TextSpan(
-                        text: '\$ 10.0',
+                        text: '0.00000',
                         style: TextStyle(
-                          color: themeColor,
+                          color: AppColor.themeColor,
                           fontSize: 30.0,
                         )),
                   ],
@@ -85,6 +91,7 @@ class _HistoryViewState extends State<HistoryView> {
             ),
             togglebutton(),
             chart(),
+            coinDetail(),
           ],
         ),
       )),
@@ -121,7 +128,7 @@ class _HistoryViewState extends State<HistoryView> {
                   enableTooltip: true,
                   animationDuration: 10,
                   trendlines: null,
-                  color: themeColor,
+                  color: AppColor.themeColor,
                   xValueMapper: (SalesData sales, _) => sales.year,
                   yValueMapper: (SalesData sales, _) => sales.sales)
             ]);
@@ -151,11 +158,11 @@ class _HistoryViewState extends State<HistoryView> {
                   minHeight: 30,
                   maxHeight: 30),
               borderRadius: const BorderRadius.all(Radius.circular(8)),
-              selectedBorderColor: themeColor,
-              selectedColor: bgColor,
+              selectedBorderColor: AppColor.themeColor,
+              selectedColor: AppColor.bgColor,
               borderColor: HexColor('#97b858'),
-              fillColor: themeColor,
-              color: themeColor,
+              fillColor: AppColor.themeColor,
+              color: AppColor.themeColor,
               isSelected: selectedInterval,
               children: const [
                 Padding(
@@ -197,11 +204,11 @@ class _HistoryViewState extends State<HistoryView> {
                   minHeight: 30,
                   maxHeight: 30),
               borderRadius: const BorderRadius.all(Radius.circular(8)),
-              selectedBorderColor: themeColor,
-              selectedColor: bgColor,
+              selectedBorderColor: AppColor.themeColor,
+              selectedColor: AppColor.bgColor,
               borderColor: HexColor('#97b858'),
-              fillColor: themeColor,
-              color: themeColor,
+              fillColor: AppColor.themeColor,
+              color: AppColor.themeColor,
               isSelected: selectedChart,
               children: const [
                 Padding(
@@ -218,18 +225,66 @@ class _HistoryViewState extends State<HistoryView> {
     );
   }
 
+  coinDetail() {
+    if (coinController.dataCoinDetailAvailable) {
+      var detail = coinController.trxCoinDetail;
+      return Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Column(
+            children: [
+              Text(
+                'Market Cap ',
+                style: _textStyle,
+              ),
+              Text(
+                '24 change ',
+                style: _textStyle,
+              ),
+              Text(
+                'Change % 24Hr',
+                style: _textStyle,
+              ),
+            ],
+          ),
+          Column(
+            children: [
+              Text(
+                'High 24Hr',
+                style: _textStyle,
+              ),
+              Text(
+                'Low 24Hr ',
+                style: _textStyle,
+              ),
+              Text(
+                'Change 24Hr',
+                style: _textStyle,
+              ),
+            ],
+          ),
+        ],
+      );
+    } else {
+      return Container();
+    }
+  }
+
   callSnakBar() {
     showTopSnackBar(
       context,
       CustomSnackBar.info(
         textStyle: TextStyle(
-            color: themeColor, fontWeight: FontWeight.w500, fontSize: 16),
+            color: AppColor.themeColor,
+            fontWeight: FontWeight.w500,
+            fontSize: 16),
         message: "Under construction",
-        backgroundColor: bgColor,
-        icon: Icon(Icons.construction, color: themeColor, size: 40),
+        backgroundColor: AppColor.bgColor,
+        icon: Icon(Icons.construction, color: AppColor.themeColor, size: 40),
         iconPositionLeft: 30,
         boxShadow: [
-          BoxShadow(color: themeColor, spreadRadius: 1, blurRadius: 2)
+          BoxShadow(color: AppColor.themeColor, spreadRadius: 1, blurRadius: 2)
         ],
       ),
       animationDuration: const Duration(milliseconds: 800),

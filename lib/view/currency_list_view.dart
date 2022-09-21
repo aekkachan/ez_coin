@@ -30,7 +30,7 @@ class _CurrencyListViewState extends State<CurrencyListView> {
 
     return SafeArea(
       child: Container(
-        color: AppColor().bgColor,
+        color: AppColor.bgColor,
         padding: const EdgeInsets.only(left: 5, right: 5, top: 10),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -49,14 +49,14 @@ class _CurrencyListViewState extends State<CurrencyListView> {
                     Text(
                       'Market Cap',
                       style: TextStyle(
-                          color: AppColor().themeColor,
+                          color: AppColor.themeColor,
                           fontSize: 30,
                           fontWeight: FontWeight.w500),
                     ),
                     Icon(
                       Icons.arrow_drop_down,
                       size: 30,
-                      color: AppColor().themeColor,
+                      color: AppColor.themeColor,
                     ),
                   ],
                 ),
