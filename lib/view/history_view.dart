@@ -24,6 +24,7 @@ class _HistoryViewState extends State<HistoryView> {
 
   late TooltipBehavior _tooltipBehavior;
   late CrosshairBehavior _crosshairBehavior;
+  ChartSeriesController? _chartSeriesController;
 
   @override
   void initState() {
@@ -38,7 +39,7 @@ class _HistoryViewState extends State<HistoryView> {
 
   @override
   Widget build(BuildContext context) {
-    coinController.getPrice('params');
+    coinController.getPrice('daily');
     coinController.getCoinDetail('param');
 
     return Scaffold(
@@ -77,7 +78,9 @@ class _HistoryViewState extends State<HistoryView> {
                     ),
                     children: <TextSpan>[
                       TextSpan(
-                          text: '${value.trxCoinDetail[0].currentPrice}',
+                          text: value.trxCoinDetail.isEmpty
+                              ? '0.00000'
+                              : '${value.trxCoinDetail[0].currentPrice}',
                           style: TextStyle(
                             color: AppColor.themeColor,
                             fontSize: 30.0,
@@ -105,16 +108,24 @@ class _HistoryViewState extends State<HistoryView> {
                                 children: [
                                   _itemRow(
                                       'Market Cap',
-                                      NumberFormat.compact().format(
-                                          value.trxCoinDetail[0].marketCap)),
+                                      NumberFormat.compact().format(value
+                                              .trxCoinDetail.isEmpty
+                                          ? 0
+                                          : value.trxCoinDetail[0].marketCap)),
                                   _itemRow(
                                       'Volume',
                                       NumberFormat.compact().format(
-                                          value.trxCoinDetail[0].totalVolume)),
+                                          value.trxCoinDetail.isEmpty
+                                              ? 0
+                                              : value.trxCoinDetail[0]
+                                                  .totalVolume)),
                                   _itemRow(
                                       'Supply',
-                                      NumberFormat.compact().format(value
-                                          .trxCoinDetail[0].circulatingSupply)),
+                                      NumberFormat.compact().format(
+                                          value.trxCoinDetail.isEmpty
+                                              ? 0
+                                              : value.trxCoinDetail[0]
+                                                  .circulatingSupply)),
                                 ],
                               ),
                             ),
@@ -127,11 +138,11 @@ class _HistoryViewState extends State<HistoryView> {
                               child: Column(
                                 children: [
                                   _itemRow('High 24 Hr',
-                                      '\$${value.trxCoinDetail[0].high24h}'),
+                                      '\$${value.trxCoinDetail.isEmpty ? 0 : value.trxCoinDetail[0].high24h}'),
                                   _itemRow('Low 24 Hr',
-                                      '\$${value.trxCoinDetail[0].low24h}'),
+                                      '\$${value.trxCoinDetail.isEmpty ? 0 : value.trxCoinDetail[0].low24h}'),
                                   _itemRow('Chang % 24 Hr',
-                                      '${value.trxCoinDetail[0].priceChangePercentage24h?.toStringAsFixed(2)}%'),
+                                      '${value.trxCoinDetail.isEmpty ? 0 : value.trxCoinDetail[0].priceChangePercentage24h?.toStringAsFixed(2)}%'),
                                 ],
                               ),
                             ),
@@ -149,37 +160,38 @@ class _HistoryViewState extends State<HistoryView> {
     return Container(
       padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
       alignment: Alignment.center,
-      child: Obx(() {
-        if (coinController.dataPriceAvailable) {
-          var price = coinController.trxPrice;
-          List coinPrice = price.prices!;
-          int interval = 0;
+      child: GetBuilder<EZCoinCoinController>(
+          init: coinController,
+          builder: (value) {
+            var price = coinController.trxPrice;
+            List coinPrice = price.prices!;
+            int interval = 0;
 
-          for (var index = coinPrice.length - 1; index >= 0; index--) {
-            chartData.add(SalesData(
-                DateTime.now().add(Duration(hours: interval)),
-                coinPrice[index][1]));
-            interval--;
-          }
-        }
-        return SfCartesianChart(
-            crosshairBehavior: _crosshairBehavior,
-            tooltipBehavior: _tooltipBehavior,
-            legend: Legend(isVisible: false),
-            enableAxisAnimation: true,
-            primaryXAxis: DateTimeAxis(),
-            series: <ChartSeries>[
-              // Renders line chart
-              LineSeries<SalesData, DateTime>(
-                  dataSource: chartData,
-                  enableTooltip: true,
-                  animationDuration: 10,
-                  trendlines: null,
-                  color: AppColor.themeColor,
-                  xValueMapper: (SalesData sales, _) => sales.year,
-                  yValueMapper: (SalesData sales, _) => sales.sales)
-            ]);
-      }),
+            for (var index = coinPrice.length - 1; index >= 0; index--) {
+              chartData.add(SalesData(
+                  DateTime.now().add(Duration(days: interval)),
+                  coinPrice[index][1]));
+              interval--;
+            }
+
+            return SfCartesianChart(
+                crosshairBehavior: _crosshairBehavior,
+                tooltipBehavior: _tooltipBehavior,
+                legend: Legend(isVisible: false),
+                enableAxisAnimation: true,
+                primaryXAxis: DateTimeAxis(),
+                series: <ChartSeries>[
+                  // Renders line chart
+                  LineSeries<SalesData, DateTime>(
+                      dataSource: chartData,
+                      enableTooltip: true,
+                      animationDuration: 10,
+                      trendlines: null,
+                      color: AppColor.themeColor,
+                      xValueMapper: (SalesData sales, _) => sales.year,
+                      yValueMapper: (SalesData sales, _) => sales.sales)
+                ]);
+          }),
     );
   }
 
@@ -193,11 +205,20 @@ class _HistoryViewState extends State<HistoryView> {
           Obx(() {
             return ToggleButtons(
               direction: Axis.horizontal,
-              onPressed: (int index) {
+              onPressed: (int index) async {
                 // The button that is tapped is set to true, and the others to false.
                 for (int i = 0; i < selectedInterval.length; i++) {
                   selectedInterval[i] = i == index;
                 }
+
+                callSnakBar();
+                // if (index == 0) {
+                //   await coinController.getPrice('daily');
+                //   print('daily');
+                // } else {
+                //   await coinController.getPrice('hourly');
+                //   print('hourly');
+                // }
               },
               constraints: BoxConstraints(
                   minWidth: 0,

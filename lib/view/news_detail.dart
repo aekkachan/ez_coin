@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:transparent_image/transparent_image.dart';
 
 class NewsDetail extends StatelessWidget {
   const NewsDetail(
@@ -64,12 +63,14 @@ class NewsDetail extends StatelessWidget {
                       child: widget,
                     );
                   },
-                  child: FadeInImage.memoryNetwork(
-                    placeholder: kTransparentImage,
+                  child: FadeInImage.assetNetwork(
+                    placeholder: 'assets/placeholder.png',
                     image: imgUrl,
                     width: double.infinity,
                     height: 200,
                     fit: BoxFit.fill,
+                    imageErrorBuilder: ((context, error, stackTrace) =>
+                        Image.asset('assets/placeholder.png')),
                   ),
                 ),
               ),

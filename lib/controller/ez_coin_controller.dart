@@ -13,10 +13,9 @@ class EZCoinCoinController extends GetxController {
   var _trxPopularNews;
   var _trxLastedNews;
   var _trxPrice;
-  var _trxCoinDetail;
 
   List<Coin> trxCoin = <Coin>[].obs;
-  List<CoinDetail> trxCoinDetail = <CoinDetail>[].obs;
+  List<CoinDetail> _trxCoinDetail = <CoinDetail>[].obs;
 
   var _dataPopularNewsAvailable = false.obs;
   var _dataLastedNewsAvailable = false.obs;
@@ -33,7 +32,7 @@ class EZCoinCoinController extends GetxController {
   News get trxPopularNews => _trxPopularNews;
   News2 get trxLastedNews => _trxLastedNews;
   Data get trxPrice => _trxPrice;
-  // CoinDetail get trxCoinDetail => _trxCoinDetail;
+  List<CoinDetail> get trxCoinDetail => _trxCoinDetail;
 
   Future<void> getPopularNews(String params) {
     var currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
@@ -84,9 +83,10 @@ class EZCoinCoinController extends GetxController {
         .whenComplete(() => _dataCoinAvailable.value = true);
   }
 
-  Future<void> getPrice(String params) {
+  Future<void> getPrice(String interval) {
+    var day = interval == 'daily' ? '30' : '15';
     var fetchUrl =
-        'https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=20&interval=hourly';
+        'https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=$day&interval=$interval';
     debugPrint(fetchUrl);
 
     return RequestService.fetchJsonDataGetRequest(fetchUrl)
@@ -106,12 +106,8 @@ class EZCoinCoinController extends GetxController {
 
     return RequestService.fetchJsonDataGetRequest(fetchUrl)
         .then((response) {
-          // if (response != null) {
-          //   _trxCoinDetail = CoinDetail.fromJson(response);
-          // }
-
           if (response != null) {
-            trxCoinDetail = (response as List)
+            _trxCoinDetail = (response as List)
                 .map((element) => CoinDetail.fromJson(element))
                 .toList()
                 .obs;

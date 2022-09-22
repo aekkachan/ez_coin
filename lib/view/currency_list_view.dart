@@ -24,7 +24,7 @@ class _CurrencyListViewState extends State<CurrencyListView> {
     Colors.red,
   ];
 
-  var titleSelecter = 'Market Cap';
+  var titleSelecter = 'Market Cap'.obs;
 
   @override
   Widget build(BuildContext context) {
@@ -48,13 +48,13 @@ class _CurrencyListViewState extends State<CurrencyListView> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
-                      titleSelecter,
-                      style: TextStyle(
-                          color: AppColor.themeColor,
-                          fontSize: 30,
-                          fontWeight: FontWeight.w500),
-                    ),
+                    Obx((() => Text(
+                          titleSelecter.value.toString(),
+                          style: TextStyle(
+                              color: AppColor.themeColor,
+                              fontSize: 30,
+                              fontWeight: FontWeight.w500),
+                        ))),
                     Icon(
                       Icons.arrow_drop_down,
                       size: 30,
@@ -80,12 +80,12 @@ class _CurrencyListViewState extends State<CurrencyListView> {
                           left: 10, right: 10, bottom: 20),
                       elevation: 4,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.0),
+                        borderRadius: BorderRadius.circular(20.0),
                       ),
                       child: ClipPath(
                         clipper: ShapeBorderClipper(
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15))),
+                                borderRadius: BorderRadius.circular(20))),
                         child: Container(
                           color: HexColor('#DFDFDE'),
                           padding: const EdgeInsets.only(
@@ -165,7 +165,7 @@ class _CurrencyListViewState extends State<CurrencyListView> {
                 onTap: () async {
                   Navigator.of(context).pop();
                   await coinController.getCoin('market_cap_desc');
-                  titleSelecter = 'Market Cap';
+                  titleSelecter.value = 'Market Cap';
                 },
                 leading: const Icon(Icons.local_fire_department_outlined),
                 title: const Text('Market Cap'),
@@ -174,7 +174,7 @@ class _CurrencyListViewState extends State<CurrencyListView> {
                 onTap: () async {
                   Navigator.of(context).pop();
                   await coinController.getCoin('volume_desc');
-                  titleSelecter = 'High Volumn';
+                  titleSelecter.value = 'High Volumn';
                 },
                 leading: const Icon(CupertinoIcons.up_arrow),
                 title: const Text('High Volumn'),

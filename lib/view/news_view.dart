@@ -3,7 +3,6 @@ import 'package:ez_coin/view/news_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:transparent_image/transparent_image.dart';
 
 class NewsView extends StatefulWidget {
   const NewsView({Key? key}) : super(key: key);
@@ -17,8 +16,8 @@ class _NewsViewState extends State<NewsView> {
 
   @override
   Widget build(BuildContext context) {
-    // coinController.getPopularNews('data');
-    // coinController.getLastedNews('data');
+    // coinController.getPopularNews('param');
+    // coinController.getLastedNews('param');
 
     return Scaffold(
       body: SafeArea(
@@ -153,7 +152,8 @@ class _NewsViewState extends State<NewsView> {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
                       return NewsDetail(
-                        imgUrl: article[index].urlToImage,
+                        imgUrl: article[index].urlToImage ??
+                            'https://media.giphy.com/media/S8rEAbtG4WA2ULH7CH/giphy.gif',
                         topic: article[index].title,
                         content: article[index].content,
                         imgTag: imgTag,
@@ -201,10 +201,13 @@ class _NewsViewState extends State<NewsView> {
                           flex: 3,
                           child: Hero(
                             tag: imgTag,
-                            child: FadeInImage.memoryNetwork(
-                              placeholder: kTransparentImage,
-                              image: article[index].urlToImage!,
-                            ),
+                            // article[index].urlToImage
+                            child: FadeInImage.assetNetwork(
+                                placeholder: 'assets/placeholder.png',
+                                image: article[index].urlToImage!,
+                                imageErrorBuilder:
+                                    ((context, error, stackTrace) =>
+                                        Image.asset('assets/placeholder.png'))),
                           ),
                         ),
                       ],
