@@ -16,8 +16,8 @@ class _NewsViewState extends State<NewsView> {
 
   @override
   Widget build(BuildContext context) {
-    // coinController.getPopularNews('param');
-    // coinController.getLastedNews('param');
+    coinController.getPopularNews('param');
+    coinController.getLastedNews('param');
 
     return Scaffold(
       body: SafeArea(
