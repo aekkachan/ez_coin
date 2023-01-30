@@ -17,3 +17,5 @@ samples, guidance on mobile development, and a full API reference.
 
 https://www.newsapi.org news api
 https://www.coingecko.com/en/api/documentation list of cryptocurrency
+
+<a href="https://app.daily.dev/aekkachan"><img src="https://api.daily.dev/devcards/50525e6e72304180ab63ca7873164129.png?r=0v2" width="400" alt="Eakkachan Wiwattananon's Dev Card"/></a>
