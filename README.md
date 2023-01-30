@@ -15,5 +15,5 @@ For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 
-newsapi.org // get news
-https://www.coingecko.com/en/api/documentation // list of cryptocurrency
+newsapi.org news api
+https://www.coingecko.com/en/api/documentation list of cryptocurrency
